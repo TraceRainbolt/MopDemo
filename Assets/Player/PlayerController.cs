@@ -10,15 +10,14 @@ public class PlayerController : MonoBehaviour {
 
     private Rigidbody2D rigidbodyComponent;
 
-
-	void Start () {
+    void Start () {
 		rigidbodyComponent = GetComponent<Rigidbody2D>();
 	}
 	
 	void Update () {
 		Vector2 velocity = rigidbodyComponent.velocity;
 		velocity.x = Input.GetAxis("Horizontal") * moveSpeed;
-		if (Physics2D.Raycast(transform.position, Vector2.down, 0.1f, ~(1 << 8)) && Input.GetAxis("Jump") > 0) {
+		if (Physics2D.Raycast(transform.position, Vector2.down, 0.1f, ~(1 << 9)) && Input.GetAxis("Jump") > 0) {
 		    velocity.y = jumpVelocity;
 		}
 		rigidbodyComponent.velocity = velocity;
