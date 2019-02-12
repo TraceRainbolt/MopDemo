@@ -21,7 +21,8 @@ GameObject:
   - component: {fileID: 4494713371597316}
   - component: {fileID: 23587581985697284}
   - component: {fileID: 33304876113157536}
-  - component: {fileID: 114772017649858332}
+  - component: {fileID: 114837634613285088}
+  - component: {fileID: 64066306469393030}
   m_Layer: 0
   m_Name: Liquid
   m_TagString: Untagged
@@ -56,7 +57,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 78680fda65d4e1247b8da38e1681dd7b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,7 +84,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1031611667731240}
   m_Mesh: {fileID: 0}
---- !u!114 &114772017649858332
+--- !u!64 &64066306469393030
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1031611667731240}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 0}
+--- !u!114 &114837634613285088
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -91,6 +106,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1031611667731240}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 759b2d95419c7114ab72c033ab357f55, type: 3}
+  m_Script: {fileID: 11500000, guid: 483684e48714ca9499b7cde7701c9fac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  liquidDrips: {fileID: 212619679917931540, guid: 5291d9038fa11d2478df48742aa0ec2e,
+    type: 2}
+  liquidDripSprites:
+  - {fileID: 21300000, guid: 40e0cb1206f92c44f86d28666ec36021, type: 3}
+  - {fileID: 21300002, guid: 40e0cb1206f92c44f86d28666ec36021, type: 3}
+  - {fileID: 21300004, guid: 40e0cb1206f92c44f86d28666ec36021, type: 3}
+  - {fileID: 21300006, guid: 40e0cb1206f92c44f86d28666ec36021, type: 3}
+  - {fileID: 21300008, guid: 40e0cb1206f92c44f86d28666ec36021, type: 3}
+  - {fileID: 21300010, guid: 40e0cb1206f92c44f86d28666ec36021, type: 3}
+  - {fileID: 21300012, guid: 40e0cb1206f92c44f86d28666ec36021, type: 3}
