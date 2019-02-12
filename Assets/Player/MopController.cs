@@ -25,10 +25,11 @@ public class MopController : MonoBehaviour {
     {
         if (Input.GetButtonDown("Fire1"))
         {
-            Vector3 center = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            center.z = 0;
+            // Vector3 center = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            // center.z = 0;
 
-            //Vector3 center = transform.position;
+            Vector3 center = transform.position;
+			center.y -= 0.1f;
             LiquidControl.instance.PlaceLiquid(center, 0.3f, 0.3f);
         }
     }
