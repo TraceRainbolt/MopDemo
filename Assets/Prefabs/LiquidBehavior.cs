@@ -18,17 +18,46 @@ public class LiquidBehavior : MonoBehaviour {
     private Vector3[] verts;
     private int[] triangles;
 
+    private Mesh mesh;
+    private MeshCollider liquidMeshCollider;
 
-    public void BuildMesh(Vector3 position, float left, float right)
+    private Vector3 center;
+
+    private float rightBounds;
+    private float leftBounds;
+    private float height;
+
+    private float maxWidth;
+
+
+    public void Create(Vector3 position)
     {
-        MeshCollider liquidMeshCollider = GetComponent<MeshCollider>();
-        Mesh mesh = new Mesh();
+        liquidMeshCollider = GetComponent<MeshCollider>();
+        mesh = new Mesh();
         moppable = LayerMask.GetMask("Moppable");
-
         LoadGlobals();
         GetComponent<MeshFilter>().mesh = mesh;
+        center = position;
 
-        FillVerticesArray(position, left, right);
+        rightBounds = leftBounds = position.x;
+        height = position.y;
+    }
+
+    public void UpdateMesh(Vector3 position)
+    {
+        if (position.x > rightBounds)
+        {
+            rightBounds = position.x;
+        }
+        else if (position.x < leftBounds)
+        {
+            leftBounds = position.x;
+        }
+        else {
+            return;
+        }
+
+        FillVerticesArray();
 
         // No vertices could be placed, we're done
         if (verts.Length == 0)
@@ -37,8 +66,8 @@ public class LiquidBehavior : MonoBehaviour {
             return;
         }
 
-        PlaceDripsAndFixLedges();
-		AddMeshDepth ();
+        // PlaceDripsAndFixLedges();
+		AddMeshDepth();
         GenerateTriangles();
 
         mesh.vertices = verts;
@@ -64,10 +93,18 @@ public class LiquidBehavior : MonoBehaviour {
 		verts = newVerts;
 	}
 
-    private void FillVerticesArray(Vector3 position, float left, float right)
+    private void FillVerticesArray()
     {
-        float width = right + left;
-        float leftPosition = position.x - left;
+        float width = rightBounds - leftBounds;
+
+        if (width > maxWidth)
+            width = maxWidth;
+
+        partitions = (int) (width * 200);
+
+        if (partitions == 0)
+            return;
+
         verts = new Vector3[partitions * 2];
 
         int deletedVertexCount = 0;
@@ -76,8 +113,9 @@ public class LiquidBehavior : MonoBehaviour {
         {
             int index = i - deletedVertexCount;
             // Each raycast is 1 / partitions more of the total width to the right
-            Vector3 raycastPosition = new Vector3(leftPosition + i * (width / partitions), position.y, position.z);
+            Vector3 raycastPosition = new Vector3(leftBounds + i * (width / partitions), height, center.z);
             RaycastHit2D hit = Physics2D.Raycast(raycastPosition, Vector2.down, maxDistanceToGround, moppable);
+            Debug.DrawRay(raycastPosition, Vector2.down, Color.red, maxDistanceToGround);
 
             if (hit.collider != null)
             {
@@ -89,11 +127,12 @@ public class LiquidBehavior : MonoBehaviour {
                     RaycastHit2D hit2 = Physics2D.Raycast(newRaycastPosition, Vector2.down, maxDistanceToGround, moppable);
 
                     // We don't place liquid ontop of nearby ledges if they are sufficiently tall
-                    if(hit.point.y - hit2.point.y < maxLedgePaint)
+                    if(Mathf.Abs(hit.point.y - hit2.point.y) < maxLedgePaint)
                     {
-                        deletedVertexCount++;
-                        continue;
+                        height = colliderMaxY;
                     }
+                    deletedVertexCount++;
+                    continue;
                 }
                 verts[index] = new Vector3(hit.point.x, hit.point.y + liquidHeightOffGround);
                 // Store lower vertices in second half
@@ -120,7 +159,8 @@ public class LiquidBehavior : MonoBehaviour {
         }
         verts = newVerts;
         // Update partitions for triangle generation
-        partitions -= deletedVertexCount;
+        partitions = newVertSize;
+
     }
 
     // This draws vertical liquid on "tall" edges
@@ -166,15 +206,21 @@ public class LiquidBehavior : MonoBehaviour {
     {
 		triangles = new int[verts.Length * 2 * 3 + 12];
 
-        // Connect vertexes using triangles, drawn like:
+        // Connect vertexes using triangles, e.g.:
         // .___.
         // |  /|
         // | / |
         // |/  |
         // ˙‾‾‾˙
+
 		int tNum = 24;
+
         for (int i = 0; i < partitions - 1; i++)
         {
+            // Don't connect vertices if they're far apart
+            if (Mathf.Abs(verts[i].x - verts[i + 1].x) > 0.2f)
+                continue;
+        
             // Front left triangle
             triangles[i * tNum + 0] = i;
 			triangles[i * tNum + 1] = i + partitions;
@@ -245,5 +291,6 @@ public class LiquidBehavior : MonoBehaviour {
         maxLedgePaint = LiquidControl.instance.maxLedgePaint;
         minLedgeHeight = LiquidControl.instance.minLedgeHeight;
         maxDistanceToGround = LiquidControl.instance.maxDistanceToGround;
+        maxWidth = LiquidControl.instance.maxWidth;
     }
 }
